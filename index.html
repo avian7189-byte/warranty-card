@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工程完工履歷表</title>
+    <style>
+        body { font-family: "Microsoft JhengHei", sans-serif; background: #eef2f3; padding: 20px; color: #333; }
+        .card { 
+            max-width: 500px; 
+            margin: 0 auto; 
+            background: white; 
+            border-top: 5px solid #2c3e50; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            padding: 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .header { background: #f8f9fa; padding: 30px 20px; text-align: center; border-bottom: 1px solid #eee; }
+        .header h1 { margin: 0; font-size: 24px; color: #2c3e50; }
+        .header p { margin: 10px 0 0; color: #7f8c8d; font-size: 14px; }
+        
+        .content { padding: 20px; }
+        .section-title { font-size: 14px; color: #7f8c8d; border-bottom: 2px solid #eee; padding-bottom: 5px; margin-top: 20px; margin-bottom: 15px; font-weight: bold; }
+        
+        .info-row { display: flex; margin-bottom: 12px; align-items: flex-start; }
+        .info-label { width: 100px; font-weight: bold; color: #555; flex-shrink: 0; }
+        .info-value { flex-grow: 1; color: #000; }
+        
+        .highlight-box { background: #f0f8ff; padding: 15px; border-radius: 5px; border-left: 4px solid #3498db; margin: 20px 0; }
+        .warranty-date { font-weight: bold; color: #e74c3c; font-size: 1.1em; }
+
+        .footer { background: #333; color: white; text-align: center; padding: 15px; font-size: 12px; }
+        
+        /* 列印設定 */
+        @media print {
+            body { background: white; }
+            .card { box-shadow: none; border: 1px solid #ccc; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>工程完工履歷</h1>
+        <p>Engineering Project Record</p>
+    </div>
+
+    <div class="content">
+        <div class="highlight-box">
+            <div>案場地址</div>
+            <div style="font-size: 1.2em; font-weight: bold; margin-top:5px;" id="disp_address">載入中...</div>
+        </div>
+
+        <div class="section-title">工程資訊</div>
+        <div class="info-row"><span class="info-label">完工日期</span><span class="info-value" id="disp_date">-</span></div>
+        <div class="info-row"><span class="info-label">保固期限</span><span class="info-value warranty-date" id="disp_warranty">-</span></div>
+        <div class="info-row"><span class="info-label">施工技師</span><span class="info-value" id="disp_tech">-</span></div>
+
+        <div class="section-title">技術規格</div>
+        <div class="info-row"><span class="info-label">使用材料</span><span class="info-value" id="disp_material">-</span></div>
+        <div class="info-row"><span class="info-label">施作色號</span><span class="info-value" id="disp_color">-</span></div>
+        <div class="info-row"><span class="info-label">施作手法</span><span class="info-value" id="disp_technique">-</span></div>
+
+        <div class="section-title">聯絡窗口</div>
+        <div class="info-row"><span class="info-label">業務專員</span><span class="info-value" id="disp_sales">-</span></div>
+        <div class="info-row"><span class="info-label">聯絡電話</span><span class="info-value"><a href="#" id="link_phone" style="color:#2980b9; text-decoration:none;">-</a></span></div>
+    </div>
+
+    <div class="footer">
+        感謝您的信賴，本工程提供一年保固服務。<br>
+        如有疑問請聯繫業務窗口。
+    </div>
+</div>
+
+<script>
+    // 1. 取得網址參數
+    const params = new URLSearchParams(window.location.search);
+
+    // 2. 定義一個簡單的函式來填寫資料
+    function fill(id, value) {
+        const el = document.getElementById(id);
+        if(el) el.textContent = value || "未填寫";
+    }
+
+    // 3. 讀取並填入畫面
+    fill('disp_sales', params.get('s'));
+    fill('disp_tech', params.get('t'));
+    fill('disp_address', params.get('a'));
+    fill('disp_material', params.get('m'));
+    fill('disp_technique', params.get('tec'));
+    fill('disp_color', params.get('c'));
+
+    // 電話特別處理（加上連結功能，手機點了可以直接撥打）
+    const phone = params.get('p') || "";
+    document.getElementById('link_phone').textContent = phone;
+    document.getElementById('link_phone').href = "tel:" + phone;
+
+    // 日期特別處理（計算保固一年）
+    const dateStr = params.get('d');
+    if (dateStr) {
+        document.getElementById('disp_date').textContent = dateStr;
+        
+        // 計算加一年
+        const dateObj = new Date(dateStr);
+        dateObj.setFullYear(dateObj.getFullYear() + 1);
+        
+        // 格式化日期 (YYYY-MM-DD)
+        const warrantyDate = dateObj.toISOString().split('T')[0];
+        document.getElementById('disp_warranty').textContent = warrantyDate + " (含)";
+    }
+</script>
+
+</body>
+</html>

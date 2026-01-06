@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工程履歷生成系統</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: "Microsoft JhengHei", sans-serif; background: #f4f4f4; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button:hover { background: #1a252f; }
+        #result { margin-top: 30px; text-align: center; display: none; border-top: 1px solid #eee; padding-top: 20px; }
+        #qrcode { display: flex; justify-content: center; margin: 20px 0; }
+        .link-box { word-break: break-all; background: #eee; padding: 10px; font-size: 12px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>工程履歷 QR Code 生成器</h2>
+    
+    <div class="form-group"><label>負責業務專員</label><input type="text" id="sales" placeholder="例：王小明"></div>
+    <div class="form-group"><label>業務專員電話</label><input type="text" id="phone" placeholder="例：0912-345-678"></div>
+    <div class="form-group"><label>完工日期</label><input type="date" id="date"></div>
+    <div class="form-group"><label>施工技師</label><input type="text" id="tech" placeholder="例：陳師傅"></div>
+    <div class="form-group"><label>案場地址</label><input type="text" id="address" placeholder="例：台北市信義區..."></div>
+    <div class="form-group"><label>使用材料</label><input type="text" id="material" placeholder="例：德國進口奈米塗料"></div>
+    <div class="form-group"><label>施作手法</label><input type="text" id="technique" placeholder="例：三道工法 / 噴塗"></div>
+    <div class="form-group"><label>色號</label><input type="text" id="color" placeholder="例：Pantone 123C"></div>
+
+    <button onclick="generateResume()">生成 QR Code 與連結</button>
+
+    <div id="result">
+        <h3>生成結果</h3>
+        <p>請掃描下方 QR Code 或複製連結傳送給客戶</p>
+        <div id="qrcode"></div>
+        <div class="link-box" id="urlDisplay"></div>
+        <button onclick="copyLink()" style="background:#27ae60;">複製連結</button>
+    </div>
+</div>
+
+<script>
+    function generateResume() {
+        // 1. 取得您網站的基礎網址 (假設 index.html 在同一層目錄)
+        // 注意：實際上線後，這裡要改成您的網域，例如 "https://yourname.github.io/project/index.html"
+        // 目前測試階段，我們先抓取當前路徑並指向 index.html
+        let baseUrl = window.location.href.replace('admin.html', 'index.html');
+        
+        // 2. 取得輸入值
+        const params = new URLSearchParams({
+            s: document.getElementById('sales').value,
+            p: document.getElementById('phone').value,
+            d: document.getElementById('date').value,
+            t: document.getElementById('tech').value,
+            a: document.getElementById('address').value,
+            m: document.getElementById('material').value,
+            tec: document.getElementById('technique').value,
+            c: document.getElementById('color').value
+        });
+
+        // 3. 組合完整網址
+        const fullUrl = `${baseUrl}?${params.toString()}`;
+
+        // 4. 顯示結果
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('urlDisplay').textContent = fullUrl;
+
+        // 5. 清空舊的 QR Code 並產生新的
+        document.getElementById('qrcode').innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), {
+            text: fullUrl,
+            width: 200,
+            height: 200
+        });
+    }
+
+    function copyLink() {
+        const urlText = document.getElementById('urlDisplay').textContent;
+        navigator.clipboard.writeText(urlText).then(() => {
+            alert("連結已複製！");
+        });
+    }
+</script>
+
+</body>
+</html>
